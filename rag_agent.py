@@ -28,7 +28,7 @@ def retrieve_top_k(query, docs, embeddings, top_k=3):
 def call_hyperclova_x(user_query, context_docs, system_message):
     url = "https://clovastudio.stream.ntruss.com/v3/chat-completions/HCX-005"
     headers = {
-        "Authorization": "Bearer YOUR_API_KEY",  # 🔁 본인 API 키
+        "Authorization": "Bearer nv-50bf48a41b1848c09b1c77f84d75cd5bsZTj",  # 🔁 개인 api 키이므로 과금 발생 가능성 있으니 사용 자제
         "Content-Type": "application/json"
     }
     prompt = (
