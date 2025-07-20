@@ -49,15 +49,22 @@ if st.button("🔍 Z-Tutor에게 질문하기") and user_query.strip():
 
         # 2. 프롬프트 구성
         persona_prompt_map = {
-            "📱 사회 초년생": "경제에 입문한 사회 초년생에게 설명하듯 쉽게 설명해 주세요.",
-            "🧾 취업 준비생": "재무 지식이 없는 취준생을 위한 설명을 제공해 주세요.",
-            "📊 대학생 투자자": "대학생 투자자가 이해할 수 있도록 분석 기반으로 설명해 주세요.",
-            "💸 욜로족": "간결하고 실용적인 투자 조언 중심으로 설명해 주세요.",
-            "🧘 ESG 관심형": "ESG 관점에서 친환경·윤리적 투자 측면을 고려해 설명해 주세요."
+            "High Risk-Return": "20~30대 적극적인 투자 성향을 가진 사용자로, 높은 수익을 위해 높은 리스크도 감수할 수 있습니다. ETF, 주식, 암호화폐 등에 관심이 많습니다.",
+            "Low Risk": "안정성을 최우선으로 고려하는 사용자로, 원금 손실 가능성이 적은 금융상품에 관심이 있습니다. 주로 채권, 예금, 보험 등을 선호합니다.",
+            "Balanced": "수익과 리스크의 균형을 중요시하는 사용자로, 포트폴리오 다변화와 장기 투자를 선호합니다. ETF, 배당주, 채권 등을 적절히 활용합니다."
         }
+        
+        persona = st.selectbox("당신의 투자 성향을 선택하세요:", list(persona_prompt_map.keys()))
 
-        system_message = f"금융 전문가로 행동하며, 대상은 '{persona}' 유형입니다. {persona_prompt_map[persona]}"
-        prompt = f"""[ESG 정보]\n{context_text}\n\n[질문]\n{user_query}\n\n위 정보를 참고하여 답변해 주세요."""
+        prompt_text = persona_prompt_map.get(persona)
+        if prompt_text:
+            system_message = f"당신은 '{persona}' 유형의 사용자에게 답변하는 금융 전문가입니다. 대상은 다음과 같습니다:\n{prompt_text}"
+        else:
+            st.error("선택한 페르소나에 대한 프롬프트 정보가 없습니다.")
+            st.stop()
+
+        # system_message = f"금융 전문가로 행동하며, 대상은 '{persona}' 유형입니다. {persona_prompt_map[persona]}"
+        # prompt = f"""[ESG 정보]\n{context_text}\n\n[질문]\n{user_query}\n\n위 정보를 참고하여 답변해 주세요."""
 
         # 3. HyperCLOVA 호출
         response = call_hyperclova_x(prompt, system=system_message)
