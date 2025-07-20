@@ -24,7 +24,7 @@ with st.sidebar:
     st.markdown("선택한 유형에 따라 금융 정보 응답이 조정됩니다.")
 
 # 🧠 메인 화면 제목
-st.markdown("<h1 style='text-align: center;'>🧠 Z세대를 위한 금융 AI 튜터</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: left;'>🧠 Z세대를 위한 금융 AI 튜터: Z-Tutor에게 물어봐!</h1>", unsafe_allow_html=True)
 
 # 🖼️ 페르소나 이미지 출력 (중앙 정렬 + 크기 조절)
 image_path = persona_image_map.get(persona)
