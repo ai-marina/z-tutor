@@ -7,7 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import requests
 
 # 1. Load data
-etf_df = pd.read_csv("data_4908_20250720.csv")  # 이 파일명 정확히 확인
+etf_df = pd.read_csv("data_4908_20250720.csv", encoding='cp949')  # 이 파일명 정확히 확인
 
 # 2. Embed model
 embed_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
