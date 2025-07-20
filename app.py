@@ -21,7 +21,7 @@ persona_image_map = {
     "💸 욜로족": "persona4.png",
     "🧘 ESG 관심형": "persona5.png"
 }
-img = Image.open(f"assets/persona_images/{persona_image_map[persona]}")
+img = Image.open(f"persona_images/{persona_image_map[persona]}")
 st.sidebar.image(img, caption=persona, use_column_width=True)
 
 # 3. 질문 입력창
