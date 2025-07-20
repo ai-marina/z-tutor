@@ -27,12 +27,24 @@ with st.sidebar:
 st.markdown("<h1 style='text-align: center;'>🧠 Z-Tutor: Z세대 맞춤형 금융 AI 튜터</h1>", unsafe_allow_html=True)
 
 # 🖼️ 페르소나 이미지 출력
+# 🖼️ 페르소나 이미지 출력
 image_path = persona_image_map.get(persona)
 
 if image_path:
     try:
         img = Image.open(image_path)
-        st.image(img, caption=f"페르소나: {persona}", width=150)
+
+        # 이미지 중앙 정렬 + 크기 조절을 위한 HTML 마크업
+        st.markdown(
+            f"""
+            <div style="text-align: center;">
+                <img src="data:image/png;base64,{base64.b64encode(img.tobytes()).decode()}" width="150"/>
+                <p><b>페르소나: {persona}</b></p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
     except FileNotFoundError:
         st.warning(f"이미지 파일이 존재하지 않습니다: {image_path}")
 
