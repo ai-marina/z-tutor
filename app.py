@@ -14,15 +14,18 @@ persona = st.sidebar.selectbox("당신의 유형은?", [
 st.sidebar.markdown("선택한 유형에 따라 금융 정보 응답이 조정됩니다.")
 
 # 선택에 따라 이미지 표시
+from PIL import Image
+
+# 페르소나에 따라 이미지 파일 매핑
 persona_image_map = {
-    "📱 사회 초년생": "persona1.png",
-    "🧾 취업 준비생": "persona2.png",
-    "📊 대학생 투자자": "persona3.png",
-    "💸 욜로족": "persona4.png",
-    "🧘 ESG 관심형": "persona5.png"
+    "High Risk-RTN": "persona1.png",
+    "Low Risk": "persona2.png",
+    "Balanced": "persona3.png"
 }
-img = Image.open(f"persona_images/{persona_image_map[persona]}")
-st.sidebar.image(img, caption=persona, use_column_width=True)
+
+# 이미지 로딩 시 경로 변경 없이 현재 디렉토리 기준으로 불러오기
+img = Image.open(persona_image_map[persona])
+st.image(img, width=200)
 
 # 3. 질문 입력창
 st.markdown("### ❓ 궁금한 금융 질문을 입력하세요")
