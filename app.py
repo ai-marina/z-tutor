@@ -28,10 +28,11 @@ st.markdown("<h1 style='text-align: center;'>🧠 Z-Tutor: Z세대 맞춤형 금
 
 # 🖼️ 페르소나 이미지 출력
 image_path = persona_image_map.get(persona)
+
 if image_path:
     try:
         img = Image.open(image_path)
-        st.image(img, caption=f"페르소나: {persona}", use_container_width=True)
+        st.image(img, caption=f"페르소나: {persona}", width=150)
     except FileNotFoundError:
         st.warning(f"이미지 파일이 존재하지 않습니다: {image_path}")
 
