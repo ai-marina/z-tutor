@@ -6,7 +6,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import requests
 
 # 1. Load ESG 데이터
-etf_df = pd.read_csv("data/data_4908_20250720.csv", encoding='cp949')  # 디렉토리 반영
+etf_df = pd.read_csv("data_4908_20250720.csv", encoding='cp949')  # 디렉토리 반영
 
 # 2. Sentence-BERT 임베딩 모델 로드
 embed_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
