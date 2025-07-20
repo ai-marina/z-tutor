@@ -28,7 +28,7 @@ def retrieve_top_k(query, docs, embeddings, top_k=3):
 def call_hyperclova_x(user_query, context_docs):
     url = "https://clovastudio.stream.ntruss.com/v3/chat-completions/HCX-005"
     headers = {
-        "Authorization": "Bearer YOUR_API_KEY",  # 🔁 여기에 본인의 API 키 입력
+        "Authorization": "Bearer nv-50bf48a41b1848c09b1c77f84d75cd5bsZTj",  # 🔁 여기에 본인의 API 키 입력
         "Content-Type": "application/json"
     }
     prompt = (
