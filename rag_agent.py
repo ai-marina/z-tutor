@@ -24,20 +24,22 @@ def retrieve_top_k(query, docs, embeddings, top_k=3):
     top_indices = scores.argsort()[::-1][:top_k]
     return [docs[i] for i in top_indices]
 
-# 6. HyperCLOVA X 호출 함수
-def call_hyperclova_x(user_query, context_docs):
+# 6. HyperCLOVA X 호출 함수 (페르소나 반영)
+def call_hyperclova_x(user_query, context_docs, system_message="금융 전문가로 행동하세요."):
     url = "https://clovastudio.stream.ntruss.com/v3/chat-completions/HCX-005"
     headers = {
-        "Authorization": "Bearer nv-50bf48a41b1848c09b1c77f84d75cd5bsZTj",  # 🔁 여기에 본인의 API 키 입력
+        "Authorization": "Bearer nv-50bf48a41b1848c09b1c77f84d75cd5bsZTj",  # 👈개인적으로 발급 받은 API. 과금 발생할 수 있으니 사용 자제
         "Content-Type": "application/json"
     }
+
     prompt = (
         f"[질문]\n{user_query}\n\n"
         f"[참고 문서]\n" + "\n".join(context_docs)
     )
+
     payload = {
         "messages": [
-            {"role": "system", "content": "금융 전문가로 행동하세요."},
+            {"role": "system", "content": system_message},
             {"role": "user", "content": prompt}
         ],
         "temperature": 0.7,
@@ -45,6 +47,7 @@ def call_hyperclova_x(user_query, context_docs):
         "maxTokens": 1024,
         "stream": False
     }
+
     response = requests.post(url, headers=headers, json=payload)
     response.raise_for_status()
     return response.json()["result"]["message"]["content"]
