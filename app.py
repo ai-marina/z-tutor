@@ -16,16 +16,25 @@ st.sidebar.markdown("선택한 유형에 따라 금융 정보 응답이 조정�
 # 선택에 따라 이미지 표시
 from PIL import Image
 
-# 페르소나에 따라 이미지 파일 매핑
+from PIL import Image
+
+# 드롭다운에 사용되는 페르소나 이름 (드롭다운 value와 key 일치하게 유지)
 persona_image_map = {
-    "High Risk-RTN": "persona1.png",
+    "High Risk-Retune": "persona1.png",
     "Low Risk": "persona2.png",
     "Balanced": "persona3.png"
 }
 
-# 이미지 로딩 시 경로 변경 없이 현재 디렉토리 기준으로 불러오기
-img = Image.open(persona_image_map[persona])
-st.image(img, width=200)
+# 사용자 선택값
+persona = st.selectbox("당신의 유형은?", list(persona_image_map.keys()))
+
+# 이미지 표시
+img_path = persona_image_map.get(persona)
+if img_path:
+    img = Image.open(img_path)  # main 디렉토리 기준
+    st.image(img, caption=persona, use_column_width=True)
+else:
+    st.warning("선택한 페르소나에 대한 이미지가 없습니다.")
 
 # 3. 질문 입력창
 st.markdown("### ❓ 궁금한 금융 질문을 입력하세요")
