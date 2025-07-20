@@ -23,33 +23,30 @@ with st.sidebar:
     persona = st.selectbox("당신의 유형은?", persona_list)
     st.markdown("선택한 유형에 따라 금융 정보 응답이 조정됩니다.")
 
-# 🧠 메인 화면 제목
-st.markdown("<h1 style='text-align: center;'>🧠 Z세대를 위한 금융 AI 튜터</h1>", unsafe_allow_html=True)
+# 중앙 정렬을 위한 columns
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    # 🧠 메인 화면 제목
+    st.markdown("<h1 style='text-align: center;'>🧠 Z세대를 위한 금융 AI 튜터</h1>", unsafe_allow_html=True)
 
-# 🖼️ 페르소나 이미지 출력 (중앙 정렬 + 크기 조절)
-image_path = persona_image_map.get(persona)
-
-if image_path:
-    try:
-        img = Image.open(image_path)
-
-        # 중앙 정렬을 위한 columns 사용
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
+    # 🖼️ 페르소나 이미지 출력
+    image_path = persona_image_map.get(persona)
+    if image_path:
+        try:
+            img = Image.open(image_path)
             st.image(img, caption=f"페르소나: {persona}", width=150)
+        except FileNotFoundError:
+            st.warning(f"이미지 파일이 존재하지 않습니다: {image_path}")
 
-    except FileNotFoundError:
-        st.warning(f"이미지 파일이 존재하지 않습니다: {image_path}")
+    # 📥 사용자 질문 입력
+    st.markdown("### 💬 Z-Tutor에게 질문해보세요:")
+    user_input = st.text_input("예: ETF가 뭐야?", key="user_input")
 
-# 📥 사용자 질문 입력
-st.markdown("### 💬 Z-Tutor에게 질문해보세요:")
-user_input = st.text_input("예: ETF가 뭐야?", key="user_input")
-
-# 🔁 시스템 메시지 구성
-if user_input:
-    with st.spinner("Z-Tutor가 답변을 작성 중입니다..."):
-        system_message = f"금융 전문가로 행동하며, 대상은 '{persona}' 유형입니다. {persona_prompt_map[persona]}"
-        top_docs = retrieve_top_k(user_input, esg_docs, esg_embeddings, top_k=3)
-        answer = call_hyperclova_x(user_input, top_docs)
-        st.markdown("#### 📌 Z-Tutor의 답변:")
-        st.write(answer)
+    # 🔁 시스템 메시지 구성 및 응답
+    if user_input:
+        with st.spinner("Z-Tutor가 답변을 작성 중입니다..."):
+            system_message = f"금융 전문가로 행동하며, 대상은 '{persona}' 유형입니다. {persona_prompt_map[persona]}"
+            top_docs = retrieve_top_k(user_input, esg_docs, esg_embeddings, top_k=3)
+            answer = call_hyperclova_x(user_input, top_docs)
+            st.markdown("#### 📌 Z-Tutor의 답변:")
+            st.write(answer)
