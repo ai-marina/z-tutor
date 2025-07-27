@@ -4,6 +4,7 @@ from rag_agent import retrieve_top_k, call_hyperclova_x
 
 st.set_page_config(page_title="Z-Tutor", layout="centered")
 
+# 세션 초기화
 if 'step' not in st.session_state:
     st.session_state.step = 0
 if 'step1_data' not in st.session_state:
@@ -11,10 +12,20 @@ if 'step1_data' not in st.session_state:
 if 'step2_data' not in st.session_state:
     st.session_state.step2_data = {}
 
+# 앱 타이틀
 st.title("🧠 Z세대를 위한 금융 AI: Z-Tutor")
 st.divider()
 
-if st.session_state.step == 1:
+# Step 0 - 시작 화면
+if st.session_state.step == 0:
+    st.header("Z-Tutor에 오신 것을 환영합니다 👋")
+    st.markdown("아래 버튼을 눌러 투자 성향 진단을 시작해보세요.")
+    if st.button("진단 시작하기", type="primary"):
+        st.session_state.step = 1
+        st.rerun()
+
+# Step 1 - 투자 성향 진단
+elif st.session_state.step == 1:
     st.header("Step 1. 나의 투자 성향 진단")
 
     st.session_state.step1_data['투자 목적'] = st.radio("1. 당신의 주요 투자 목적은 무엇인가요?", ["단기 수익", "장기 자산 형성", "은퇴 준비", "기타"])
@@ -26,6 +37,7 @@ if st.session_state.step == 1:
         st.session_state.step = 2
         st.rerun()
 
+# Step 2 - 투자 계획서 작성
 elif st.session_state.step == 2:
     st.header("Step 2. 투자 계획서 작성")
     st.session_state.step2_data['목표 금액'] = st.radio("1. 투자 목표 금액은 얼마인가요?", ["500만원 이하", "500만~2000만원", "2000만원 이상"])
@@ -36,13 +48,15 @@ elif st.session_state.step == 2:
         st.session_state.step = 3
         st.rerun()
 
+# Step 3 - 포트폴리오 추천 및 상담
 elif st.session_state.step == 3:
     st.header("Step 3. 포트폴리오 추천 및 Z-Tutor 상담")
+
     user_input = st.text_input("Z-Tutor에게 궁금한 점을 입력하세요", placeholder="예: ETF란 무엇인가요?")
 
     if user_input:
         with st.spinner("Z-Tutor가 답변 중입니다..."):
-            # 사용자 정보 요약
+            # 사용자 페르소나 요약
             profile_summary = "\n".join([
                 f"{k}: {v}" for k, v in st.session_state.step1_data.items()
             ] + [
@@ -50,8 +64,8 @@ elif st.session_state.step == 3:
             ])
 
             system_msg = f"당신은 금융 상담 전문가이며, 다음 사용자 정보를 고려하여 조언합니다:\n{profile_summary}"
-            context = retrieve_top_k(user_input)
             try:
+                context = retrieve_top_k(user_input)
                 answer = call_hyperclova_x(user_query=user_input, context_docs=context, system_message=system_msg)
                 st.success("Z-Tutor의 답변:")
                 st.write(answer)
