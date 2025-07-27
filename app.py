@@ -12,7 +12,7 @@ if 'step' not in st.session_state:
 st.markdown("## 🧠 Z세대를 위한 금융 AI: Z-Tutor")
 
 if st.session_state.step == 0:
-    st.image("images/z_tutor_intro.png")
+    #st.image("images/z_tutor_intro.png")
     st.markdown("처음이라면, 나의 성향부터 알아볼까요?")
     st.button("나의 투자 성향 진단하기", on_click=lambda: st.session_state.update(step=1))
 
