@@ -5,8 +5,8 @@ import faiss
 import requests
 
 # ------------------ 0. HCX API 설정 ------------------
-HCX_API_URL = "https://clova.api.naver.com/..."  # 실제 엔드포인트 입력
-HCX_API_KEY = "YOUR_HCX_KEY"  # 보안 고려하여 환경변수로 대체 권장
+HCX_API_URL = "https://clovastudio.stream.ntruss.com/v3/chat-completions/HCX-005"  # 실제 엔드포인트 입력
+HCX_API_KEY = "Bearer nv-50bf48a41b1848c09b1c77f84d75cd5bsZTj"  # 보안 고려하여 환경변수로 대체 권장
 MODEL_NAME = "HCX-005"
 
 # ------------------ 1. 문서 임베딩 RAG 준비 ------------------
