@@ -1,39 +1,36 @@
+# rag_agent.py
 import pandas as pd
-import torch
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import requests
 
-# 1. Load data (한글 인코딩 고려 + 경로 반영)
-etf_df = pd.read_csv("data_4908_20250720.csv", encoding='cp949')
-
-# 2. 검색용 문장 생성 (존재하는 컬럼 조합: 종목명 + 기초지수명)
-etf_df["esg_text"] = etf_df["종목명"] + "는 " + etf_df["기초지수_지수명"] + " 지수를 추종합니다."
-
-# 3. 임베딩 모델 로딩
-embed_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-
-# 4. 문장 임베딩 벡터화
+# 1. Load ETF data (ensure encoding and path are correct)
+etf_df = pd.read_csv("data_4908_20250720.csv", encoding="cp949")
+etf_df["esg_text"] = etf_df["종목명"] + "는 " + etf_df["기초지수_지수명"] + " 지수를 추조합니다."
 esg_docs = etf_df["esg_text"].tolist()
+
+# 2. Load SentenceTransformer model
+embed_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 esg_embeddings = embed_model.encode(esg_docs)
 
-# 5. 유사도 기반 검색 함수
-def retrieve_top_k(query, docs, embeddings, top_k=3):
+# 3. Retrieve top K relevant documents
+def retrieve_top_k(query, top_k=3):
     query_vec = embed_model.encode([query])
-    scores = cosine_similarity(query_vec, embeddings)[0]
+    scores = cosine_similarity(query_vec, esg_embeddings)[0]
     top_indices = scores.argsort()[::-1][:top_k]
-    return [docs[i] for i in top_indices]
+    return [esg_docs[i] for i in top_indices]
 
-# 6. HyperCLOVA X 호출 함수 (페르소나 반영)
+# 4. Call HyperCLOVA X
+
 def call_hyperclova_x(user_query, context_docs, system_message):
     url = "https://clovastudio.stream.ntruss.com/v3/chat-completions/HCX-005"
     headers = {
-        "Authorization": "Bearer nv-50bf48a41b1848c09b1c77f84d75cd5bsZTj",  # 🔁 개인 api 키이므로 과금 발생 가능성 있으니 사용 자제
+        "Authorization": "Bearer nv-50bf48a41b1848c09b1c77f84d75cd5bsZTj",  # 해당 단계에서 건조한 key 계정번호 대체
         "Content-Type": "application/json"
     }
     prompt = (
-        f"[질문]\n{user_query}\n\n"
-        f"[참고 문서]\n" + "\n".join(context_docs)
+        f"[\uc9c8\ubb38]\n{user_query}\n\n" +
+        f"[\ucc38\uace0 \ubb38\uc11c]\n" + "\n".join(context_docs)
     )
     payload = {
         "messages": [
