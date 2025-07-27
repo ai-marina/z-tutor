@@ -5,7 +5,7 @@ from rag_agent import retrieve_top_k, call_hyperclova_x
 st.set_page_config(page_title="Z-Tutor", layout="centered")
 
 if 'step' not in st.session_state:
-    st.session_state.step = 1
+    st.session_state.step = 0
 if 'step1_data' not in st.session_state:
     st.session_state.step1_data = {}
 if 'step2_data' not in st.session_state:
