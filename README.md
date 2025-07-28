@@ -7,7 +7,7 @@
 
 1\. 본선보고서(.pptx / .pdf 파일 첨부)
 
-2\. 제안 서비스 소스코드: (Github) https://github.com/ai-marina/z-tutor
+2\. 제안 서비스 소스코드: (Github, Demo 화면 연결 중심의 RAG 코드) https://github.com/ai-marina/z-tutor
 
 3\. 프로토타입: (Streamlit) https://z-tutor.streamlit.app/
 
