@@ -94,11 +94,19 @@ elif st.session_state.step == 3:
 
     # 버튼
     col1, col2, col3, col4 = st.columns(4)
-    if col1.button("🔚 대화 종료"):
-        st.session_state.step = 0
-    if col2.button("🔁 진단하기로 돌아가기"):
-        st.session_state.step = 1
-    if col3.button("📄 계획서로 돌아가기"):
-        st.session_state.step = 2
-    if col4.button("📊 대시보드 확인하기"):
-        st.info("🚧 대시보드 기능은 구현 예정입니다. (향후 확장 가능)")
+    
+    with col1:
+        if st.button("↩️\n대화 종료"):
+            st.session_state.step = 0  # 초기화
+    
+    with col2:
+        if st.button("🧭\n진단하기\n돌아가기"):
+            st.session_state.step = 1
+    
+    with col3:
+        if st.button("📄\n계획서로\n돌아가기"):
+            st.session_state.step = 2
+    
+    with col4:
+        if st.button("📊\n대시보드\n확인하기"):
+            st.session_state.step = 4  # or 'dashboard'
