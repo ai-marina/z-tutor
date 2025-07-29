@@ -1,73 +1,130 @@
-# app.py
 import streamlit as st
 from rag_agent import retrieve_top_k, call_hyperclova_x
 
-st.set_page_config(page_title="Z-Tutor", layout="centered")
+st.set_page_config(page_title="Z-Tutor", layout="wide")
 
-# 세션 초기화
+# 세션 상태 초기화
 if 'step' not in st.session_state:
-    st.session_state.step = 0
-if 'step1_data' not in st.session_state:
-    st.session_state.step1_data = {}
-if 'step2_data' not in st.session_state:
-    st.session_state.step2_data = {}
+    st.session_state.step = 1
+if 'risk_profile' not in st.session_state:
+    st.session_state.risk_profile = {}
+if 'investment_plan' not in st.session_state:
+    st.session_state.investment_plan = {}
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
 
-# 앱 타이틀
-st.title("🧠 Z세대를 위한 금융 AI: Z-Tutor")
-st.divider()
+# Step1. 투자 성향 진단
+def step1():
+    st.header("STEP 1. 투자 성향 진단 (Risk Profiling)")
 
-# Step 0 - 시작 화면
-if st.session_state.step == 0:
-    st.header("Z-Tutor에 오신 것을 환영합니다 👋")
-    st.markdown("아래 버튼을 눌러 투자 성향 진단을 시작해보세요.")
-    if st.button("진단 시작하기", type="primary"):
-        st.session_state.step = 1
-        st.rerun()
+    questions = {
+        "자금 성격": st.radio("1. 현재 투자 자금은?", ["생활비 일부", "여유 자금", "정기적으로 투자 가능한 자금"]),
+        "투자 목표": st.radio("2. 투자 목표는?", ["손실 없이 이자 수익", "안정적 자산 증가", "높은 수익", "고수익 감수"]),
+        "경험": st.radio("3. 투자 경험은?", ["전혀 없음", "펀드/주식 경험 있음", "간접 경험 있음", "매수·매도 해봄"]),
+        "손실 대응": st.radio("4. 손실 발생 시?", ["즉시 멈춤", "일정 손실 감수", "수익 기대하고 감수"]),
+        "투자 기간": st.radio("5. 투자 기간?", ["6개월 이하", "1년", "2~3년", "3년 이상"]),
+        "뉴스 습관": st.radio("6. 투자 뉴스 확인 빈도?", ["전혀 안 봄", "가끔 헤드라인", "주 2~3회", "거의 매일"]),
+        "우선순위": st.radio("7. 투자 시 가장 중요한 것은?", ["원금 보전", "안정적 수익", "전략적 투자", "고수익"])
+    }
 
-# Step 1 - 투자 성향 진단
-elif st.session_state.step == 1:
-    st.header("Step 1. 나의 투자 성향 진단")
-
-    st.session_state.step1_data['투자 목적'] = st.radio("1. 당신의 주요 투자 목적은 무엇인가요?", ["단기 수익", "장기 자산 형성", "은퇴 준비", "기타"])
-    st.session_state.step1_data['리스크 감수 성향'] = st.radio("2. 손실 가능성이 있더라도 높은 수익을 추구하시나요?", ["예", "아니오"])
-    st.session_state.step1_data['투자 경험'] = st.radio("3. 투자 경험이 얼마나 되셨나요?", ["없음", "1~3년", "3년 이상"])
-    st.session_state.step1_data['선호 자산 유형'] = st.multiselect("4. 선호하는 투자 자산을 선택하세요", ["주식", "채권", "ETF", "부동산", "암호화폐"])
-
-    if st.button("다음으로", type="primary"):
+    if st.button("진단하기"):
+        st.session_state.risk_profile = questions
         st.session_state.step = 2
-        st.rerun()
 
-# Step 2 - 투자 계획서 작성
-elif st.session_state.step == 2:
-    st.header("Step 2. 투자 계획서 작성")
-    st.session_state.step2_data['목표 금액'] = st.radio("1. 투자 목표 금액은 얼마인가요?", ["500만원 이하", "500만~2000만원", "2000만원 이상"])
-    st.session_state.step2_data['투자 기간'] = st.radio("2. 투자 가능 기간은 얼마나 되시나요?", ["1년 이하", "1~3년", "3년 이상"])
-    st.session_state.step2_data['투자 빈도'] = st.radio("3. 자산을 얼마나 자주 점검하고 조정하나요?", ["주 1회 이상", "월 1회", "거의 안함"])
+# Step2. 투자 계획
+def step2():
+    st.header("STEP 2. 투자 계획서 작성 (Goal-based Planning)")
 
-    if st.button("포트폴리오 추천 받기", type="primary"):
+    col1, col2 = st.columns(2)
+    with col1:
+        budget = st.radio("1. 투자 예산은?", ["500만 원 이상", "1,000만 원 이상", "3,000만 원 이상", "5,000만 원 이상", "기타"])
+        purpose = st.radio("2. 어떤 자금으로 투자?", ["여유 자금", "꺼낼 수 있는 자금", "생활비/긴급 자금"])
+        period = st.radio("3. 투자 보유 기간은?", ["6개월 이상", "1년 이상", "2년 이상", "기타"])
+        goal = st.radio("4. 투자 시 더 중시하는 것은?", ["투자 기간", "수익률"])
+
+    with col2:
+        target_return = st.radio("5. 희망 수익률은?", ["20%", "40%", "70%", "100%", "기타"])
+        action = st.radio("목표 수익률 도달 시 대응은?", ["자동 매도", "알림 후 판단"])
+        loss_response = st.radio("6. 손실 발생 시?", ["즉시 매도", "기다림", "추가 매수"])
+        knowledge = st.multiselect("7. 투자 지식/경험", ["주식 용어", "ETF", "채권", "직접 경험 없음", "간접 투자 경험"])
+
+    product_interest = st.multiselect("8. 관심 상품", ["국내 주식", "해외 주식", "ETF", "채권"])
+    strategy = st.radio("9. 투자 방식", ["일시불", "정기 투자", "비정기", "모름"])
+    reason = st.radio("10. 주요 투자 목적", ["자산 증식", "노후 준비", "교육 자금", "단기 수익", "기타"])
+    industry = st.text_input("11. 관심 산업 분야", "성장 산업")
+    style = st.multiselect("12. 선호 추천 방식", ["유명인 스타일", "인기 종목 중심"])
+
+    if st.button("계획서 생성하기"):
+        st.session_state.investment_plan = {
+            "예산": budget,
+            "자금 성격": purpose,
+            "기간": period,
+            "수익률 목표": target_return,
+            "수익률 도달시": action,
+            "손실 대응": loss_response,
+            "지식": knowledge,
+            "관심 상품": product_interest,
+            "방식": strategy,
+            "목적": reason,
+            "산업": industry,
+            "스타일": style
+        }
         st.session_state.step = 3
-        st.rerun()
 
-# Step 3 - 포트폴리오 추천 및 상담
+# Step3. 포트폴리오 제안 + 챗봇
+def step3():
+    st.header("STEP 3. 맞춤형 포트폴리오 및 상담")
+
+    risk = st.session_state.risk_profile.get("자금 성격", "")
+    rec = "ETF + 우량주" if "여유" in risk else "채권 ETF + 배당주"
+    st.subheader(f"🎯 당신은 '{risk}' 투자자입니다. 추천: {rec}")
+
+    st.divider()
+    user_input = st.text_input("Z-Tutor에게 질문해 보세요.")
+    if st.button("질문하기") and user_input:
+        prompt_context = f"""[고객 성향]
+투자 성향: {st.session_state.risk_profile}
+투자 계획: {st.session_state.investment_plan}
+
+[고객 질문]
+{user_input}"""
+        top_docs = retrieve_top_k(user_input, k=3)
+        response = call_hyperclova_x(user_input, top_docs, prompt_context)
+        st.session_state.chat_history.append((user_input, response))
+
+    for q, a in st.session_state.chat_history[::-1]:
+        st.markdown(f"**🙋 사용자 질문:** {q}")
+        st.markdown(f"**🤖 Z-Tutor 답변:** {a}")
+        st.divider()
+
+    col1, col2, col3, col4 = st.columns(4)
+    if col1.button("대화 종료"):
+        st.session_state.step = 3
+        st.session_state.chat_history = []
+    if col2.button("진단하기로 돌아가기"):
+        st.session_state.step = 1
+    if col3.button("계획서로 돌아가기"):
+        st.session_state.step = 2
+    if col4.button("대시보드 확인하기"):
+        st.session_state.step = 4
+
+# Step4. 간단한 대시보드
+def dashboard():
+    st.header("📊 투자자 요약 대시보드")
+    st.write("### 투자 성향 진단 결과")
+    st.json(st.session_state.risk_profile)
+    st.write("### 투자 계획서 요약")
+    st.json(st.session_state.investment_plan)
+
+    if st.button("처음으로"):
+        st.session_state.step = 1
+
+# 라우팅
+if st.session_state.step == 1:
+    step1()
+elif st.session_state.step == 2:
+    step2()
 elif st.session_state.step == 3:
-    st.header("Step 3. 포트폴리오 추천 및 Z-Tutor 상담")
-
-    user_input = st.text_input("Z-Tutor에게 궁금한 점을 입력하세요", placeholder="예: ETF란 무엇인가요?")
-
-    if user_input:
-        with st.spinner("Z-Tutor가 답변 중입니다..."):
-            # 사용자 페르소나 요약
-            profile_summary = "\n".join([
-                f"{k}: {v}" for k, v in st.session_state.step1_data.items()
-            ] + [
-                f"{k}: {v}" for k, v in st.session_state.step2_data.items()
-            ])
-
-            system_msg = f"당신은 금융 상담 전문가이며, 다음 사용자 정보를 고려하여 조언합니다:\n{profile_summary}"
-            try:
-                context = retrieve_top_k(user_input)
-                answer = call_hyperclova_x(user_query=user_input, context_docs=context, system_message=system_msg)
-                st.success("Z-Tutor의 답변:")
-                st.write(answer)
-            except Exception as e:
-                st.error(f"오류 발생: {str(e)}")
+    step3()
+elif st.session_state.step == 4:
+    dashboard()
